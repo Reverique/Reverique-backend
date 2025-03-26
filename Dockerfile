@@ -4,11 +4,15 @@ FROM openjdk:17-jdk-slim
 # 2. 작업 디렉토리 설정
 WORKDIR /app
 
-# 3. 로컬 빌드된 JAR 파일을 Docker 이미지에 복사
+# 3. 애플리케이션 빌드 (JAR 파일 생성)
+COPY . /app
+RUN mvn clean package -DskipTests
+
+# 4. 빌드된 JAR 파일 복사
 COPY target/reverique-0.0.1-SNAPSHOT.jar /app/reverique-0.0.1-SNAPSHOT.jar
 
-# 4. 애플리케이션 실행 명령어
+# 5. 애플리케이션 실행 명령어
 CMD ["java", "-jar", "/app/reverique-0.0.1-SNAPSHOT.jar"]
 
-# 5. 8080 포트 노출 (Spring Boot 기본 포트)
+# 6. 포트 노출 (Spring Boot 기본 포트)
 EXPOSE 8080
