@@ -1,11 +1,17 @@
-//package com.reverie_unique.reverique.domain.answer;
-//
-//import org.springframework.data.jpa.repository.JpaRepository;
-//
-//import java.time.LocalDate;
-//import java.util.List;
-//
-//public interface AnswerRepository extends JpaRepository<Answer, Long> {
-//    List<Answer> findByUserIdAndCoupleIdAndCreatedAt(LocalDate createdAt, Long userId, Long coupleId);  // 오늘 받은 질문 확인
-//    List<Answer> findByUserIdAndCoupleId(Long userId, Long coupleId);  // 유저와 커플이 받은 모든 질문 확인
-//}
+package com.reverie_unique.reverique.domain.answer;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public interface AnswerRepository extends JpaRepository<Answer, Long> {
+    @Query("SELECT a FROM Answer a WHERE a.coupleId = :coupleId " +
+        "AND YEAR(a.createdAt) = YEAR(CURDATE()) " +
+        "AND MONTH(a.createdAt) = MONTH(CURDATE()) " +
+        "AND DAY(a.createdAt) = DAY(CURDATE()) " +
+        "AND a.deleted = 0")
+    List<Answer> findTodayAnswers(@Param("coupleId") Long coupleId);
+}
