@@ -1,5 +1,6 @@
 package com.reverie_unique.reverique.domain.answer;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public class Answer {
     private Long questionId;
 
     @Column(name = "answer")
+    @JsonProperty("answer")
     private String answer;
 
     @Column(name = "created_at")

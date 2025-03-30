@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Query("SELECT a FROM Answer a WHERE a.coupleId = :coupleId " +
-        "AND YEAR(a.createdAt) = YEAR(CURDATE()) " +
-        "AND MONTH(a.createdAt) = MONTH(CURDATE()) " +
-        "AND DAY(a.createdAt) = DAY(CURDATE()) " +
-        "AND a.deleted = 0")
+            "AND EXTRACT(YEAR FROM a.createdAt) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM a.createdAt) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+            "AND EXTRACT(DAY FROM a.createdAt) = EXTRACT(DAY FROM CURRENT_DATE) " +
+            "AND a.deleted = 0")
     List<Answer> findTodayAnswers(@Param("coupleId") Long coupleId);
 }

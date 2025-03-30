@@ -39,7 +39,7 @@ public class QuestionService {
         if (randomQuestion.isPresent()) {
             Question question = randomQuestion.get();
 
-            answerService.saveAnswer(coupleId, userId, question.getId()); // AnswerService를 통해 답변 저장
+            answerService.saveAnswer(coupleId, userId, question.getId(), null); // AnswerService를 통해 답변 저장
 
             return new QuestionAnswerResponse(
                     question.getId(),
