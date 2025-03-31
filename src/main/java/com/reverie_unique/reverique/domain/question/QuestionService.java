@@ -3,10 +3,14 @@ package com.reverie_unique.reverique.domain.question;
 import com.reverie_unique.reverique.domain.answer.Answer;
 import com.reverie_unique.reverique.domain.answer.AnswerService;
 import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
+import com.reverie_unique.reverique.domain.user.User;
+import com.reverie_unique.reverique.domain.user.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -14,32 +18,46 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final AnswerService answerService;
-
+    private final UserService userService;
     @Autowired
-    public QuestionService(QuestionRepository questionRepository, AnswerService answerService) {
+    public QuestionService(QuestionRepository questionRepository, AnswerService answerService, UserService userService) {
         this.questionRepository = questionRepository;
         this.answerService = answerService;
+        this.userService = userService;
     }
 
-    public QuestionAnswerResponse getRandomQuestion(Long coupleId, Long userId) {
+    public QuestionAnswerResponse getRandomQuestion(Long userId, Long coupleId) {
+
+        User user = userService.findById(userId); // userId로 사용자 정보 조회
+        if (user == null) {
+            throw new EntityNotFoundException("사용자를 찾을 수 없습니다."); // EntityNotFoundException 던지기
+        }
+        if (!Objects.equals(user.getCoupleId(), coupleId)) {
+            throw new IllegalArgumentException("이 사용자는 해당 커플에 속하지 않습니다.");
+        }
+
         // 오늘 날짜에 해당하는 답변들을 찾음
         List<Answer> todayAnswers = answerService.findTodayAnswers(coupleId);
 
         if (todayAnswers.isEmpty()) {
-            return getRandomQuestionAndSaveAnswer(coupleId, userId); // 랜덤 질문과 답변 저장 로직을 분리
+            return getRandomQuestionAndSaveAnswer(userId, coupleId); // 랜덤 질문과 답변 저장 로직을 분리
         } else {
-            return getAnswersForToday(coupleId, userId, todayAnswers); // 오늘의 답변 처리 로직을 분리
+            return getAnswersForToday(userId, todayAnswers); // 오늘의 답변 처리 로직을 분리
         }
     }
 
     // 랜덤 질문을 가져오고 답변을 저장하는 로직
-    private QuestionAnswerResponse getRandomQuestionAndSaveAnswer(Long coupleId, Long userId) {
+    private QuestionAnswerResponse getRandomQuestionAndSaveAnswer(Long userId, Long coupleId) {
         Optional<Question> randomQuestion = questionRepository.getRandomQuestionExcludingAnswered(coupleId);
 
         if (randomQuestion.isPresent()) {
             Question question = randomQuestion.get();
 
-            answerService.saveAnswer(coupleId, userId, question.getId(), null); // AnswerService를 통해 답변 저장
+            answerService.saveAnswer(userId, coupleId, question.getId(), null); // AnswerService를 통해 답변 저장
+            Long otherUserId = getOtherUserId(userId, coupleId);
+
+            answerService.saveAnswer(otherUserId, coupleId, question.getId(), null);
+
 
             return new QuestionAnswerResponse(
                     question.getId(),
@@ -52,8 +70,18 @@ public class QuestionService {
         }
     }
 
+    private Long getOtherUserId(Long userId, Long coupleId) {
+        // coupleId에 해당하는 두 사람을 찾고, 현재 userId와 다른 userId를 반환
+        List<User> usersInCouple = userService.getUsersByCoupleId(coupleId);
+        return usersInCouple.stream()
+                .filter(user -> !user.getId().equals(userId)) // userId와 다른 사람을 찾음
+                .findFirst()
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("No other user found for coupleId: " + coupleId));
+    }
+
     // 오늘의 답변을 처리하는 로직
-    private QuestionAnswerResponse getAnswersForToday(Long coupleId, Long userId, List<Answer> todayAnswers) {
+    private QuestionAnswerResponse getAnswersForToday(Long userId, List<Answer> todayAnswers) {
         Answer myAnswer = todayAnswers.stream()
                 .filter(answer -> answer.getUserId().equals(userId))
                 .findFirst()

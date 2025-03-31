@@ -28,8 +28,7 @@ public class QuestionController {
             }
             return new ApiResponse<>(ApiStatus.SUCCESS, ApiStatus.STATUS_OK, ApiStatus.MESSAGE_SUCCESS, questionAnswerResponse);
         } catch (Exception e) {
-            return new ApiResponse<>(ApiStatus.FAILURE, ApiStatus.STATUS_SERVER_ERROR, ApiStatus.MESSAGE_SERVER_ERROR, null);
+            throw e;
         }
     }
-
 }

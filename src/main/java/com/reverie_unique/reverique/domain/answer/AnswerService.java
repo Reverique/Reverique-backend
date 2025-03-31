@@ -21,7 +21,7 @@ public class AnswerService {
 
         return todayAnswers;
     }
-    public void saveAnswer(Long coupleId, Long userId, Long questionId, String answer) {
+    public void saveAnswer(Long userId, Long coupleId, Long questionId, String answer) {
         Answer newAnswer = new Answer();
         newAnswer.setCoupleId(coupleId);
         newAnswer.setUserId(userId);
