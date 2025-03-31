@@ -2,6 +2,7 @@ package com.reverie_unique.reverique.exception;
 
 import com.reverie_unique.reverique.common.ApiResponse;
 import com.reverie_unique.reverique.constant.ApiStatus;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -27,5 +28,18 @@ public class GlobalExceptionHandler {
         String message = "Required request parameter '" + paramName + "' is not present";
 
         return new ApiResponse<>(ApiStatus.FAILURE, HttpStatus.BAD_REQUEST.value(), message, null);
+    }
+    @ExceptionHandler(EntityNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) 
+    @ResponseBody
+    public ApiResponse<String> handleEntityNotFoundException(EntityNotFoundException ex) {
+        return new ApiResponse<>(ApiStatus.FAILURE, HttpStatus.NOT_FOUND.value(), ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ApiResponse<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return new ApiResponse<>(ApiStatus.FAILURE, HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null);
     }
 }
