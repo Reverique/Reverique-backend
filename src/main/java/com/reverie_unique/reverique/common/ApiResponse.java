@@ -1,10 +1,13 @@
 package com.reverie_unique.reverique.common;
 
+import java.util.Map;
+
 public class ApiResponse<T> {
     private String status;
     private int code;
     private String message;
     private T data;
+    private PageInfo pageInfo;
 
     public ApiResponse(String status, int code, String message, T data) {
         this.status = status;
@@ -12,6 +15,15 @@ public class ApiResponse<T> {
         this.message = message;
         this.data = data;
     }
+    public ApiResponse(String status, int code, String message, T data, PageInfo pageInfo) {
+        this.status = status;
+        this.code = code;
+        this.message = message;
+        this.data = data;
+        this.pageInfo = pageInfo;
+    }
+
+
     public String getStatus() {
         return status;
     }
@@ -42,5 +54,13 @@ public class ApiResponse<T> {
 
     public void setData(T data) {
         this.data = data;
+    }
+
+    public PageInfo getPageInfo() {
+        return pageInfo;
+    }
+
+    public void setPageInfo(PageInfo pageInfo) {
+        this.pageInfo = pageInfo;
     }
 }
