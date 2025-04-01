@@ -7,6 +7,8 @@ import com.reverie_unique.reverique.domain.user.User;
 import com.reverie_unique.reverique.domain.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,7 +56,7 @@ public class QuestionService {
             Question question = randomQuestion.get();
 
             answerService.saveAnswer(userId, coupleId, question.getId(), null); // AnswerService를 통해 답변 저장
-            Long otherUserId = getOtherUserId(userId, coupleId);
+            Long otherUserId = getPartnerId(userId, coupleId);
 
             answerService.saveAnswer(otherUserId, coupleId, question.getId(), null);
 
@@ -63,14 +65,15 @@ public class QuestionService {
                     question.getId(),
                     question.getContent(),
                     null,  // 오늘의 답변이 없으므로 null
-                    null   // 상대방의 답변도 없음
+                    null ,  // 상대방의 답변도 없음,
+                    null
             );
         } else {
             return null; // 랜덤 질문이 없으면 null 반환
         }
     }
 
-    private Long getOtherUserId(Long userId, Long coupleId) {
+    private Long getPartnerId(Long userId, Long coupleId) {
         // coupleId에 해당하는 두 사람을 찾고, 현재 userId와 다른 userId를 반환
         List<User> usersInCouple = userService.getUsersByCoupleId(coupleId);
         return usersInCouple.stream()
@@ -101,10 +104,14 @@ public class QuestionService {
                     question.getId(),
                     question.getContent(),
                     myAnswer != null ? myAnswer.getAnswer() : null,  // 내 답변
-                    otherAnswer != null ? otherAnswer.getAnswer() : null  // 상대방의 답변
-            );
+                    otherAnswer != null ? otherAnswer.getAnswer() : null,  // 상대방의 답변
+                    null);
         } else {
             return null; // 질문이 없을 경우 처리
         }
+    }
+    public Page<QuestionAnswerResponse> getAnswers(Long userId, Long coupleId, Pageable pageable) {
+        Long partnerId = getPartnerId(userId, coupleId);
+        return answerService.getAnswers(userId, partnerId, coupleId, pageable);
     }
 }

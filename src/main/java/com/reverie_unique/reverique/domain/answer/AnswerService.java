@@ -1,6 +1,9 @@
 package com.reverie_unique.reverique.domain.answer;
 
+import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -59,5 +62,10 @@ public class AnswerService {
         }
 
         return false;  // ID에 해당하는 데이터를 찾지 못한 경우
+    }
+
+    public Page<QuestionAnswerResponse> getAnswers(Long userId, Long partnerId, Long coupleId, Pageable pageable){
+        Page<QuestionAnswerResponse> answers = answerRepository.getAnswers(userId, partnerId, coupleId, pageable);
+        return answers;
     }
 }
