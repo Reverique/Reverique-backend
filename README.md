@@ -28,7 +28,7 @@ Reverique는 연인들이 서로의 생각을 공유하고 소통할 수 있도�
 
 ## 📥 API 명세
 Reverique의 API 명세는 Swagger 문서를 통해 확인할 수 있습니다.  
-👉 [https://reverique.onrender.com/swagger-ui.html](https://reverique.onrender.com/swagger-ui.html)
+👉 [https://reverique-backend.onrender.com/swagger-ui/index.html)
 
 ### 주요 API 엔드포인트
 - **질문 목록 조회**
