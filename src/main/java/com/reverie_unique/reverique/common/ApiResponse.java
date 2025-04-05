@@ -1,6 +1,6 @@
 package com.reverie_unique.reverique.common;
 
-import java.util.Map;
+import com.reverie_unique.reverique.constant.ApiStatus;
 
 public class ApiResponse<T> {
     private String status;
@@ -62,5 +62,21 @@ public class ApiResponse<T> {
 
     public void setPageInfo(PageInfo pageInfo) {
         this.pageInfo = pageInfo;
+    }
+
+    public static <T> ApiResponse<T> success(T data) {
+        return new ApiResponse<>(ApiStatus.SUCCESS, ApiStatus.STATUS_OK, ApiStatus.MESSAGE_SUCCESS, data);
+    }
+
+    public static <T> ApiResponse<T> success(T data, PageInfo pageInfo) {
+        return new ApiResponse<>(ApiStatus.SUCCESS, ApiStatus.STATUS_OK, ApiStatus.MESSAGE_SUCCESS, data, pageInfo);
+    }
+
+    public static <T> ApiResponse<T> failure() {
+        return new ApiResponse<>(ApiStatus.FAILURE, ApiStatus.STATUS_NOT_FOUND, ApiStatus.NOT_FOUND_MESSAGE, null);
+    }
+
+    public static <T> ApiResponse<T> custom(String status, int code, String message, T data) {
+        return new ApiResponse<>(status, code, message, data);
     }
 }

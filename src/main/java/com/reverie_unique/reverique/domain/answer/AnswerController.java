@@ -20,9 +20,9 @@ public class AnswerController {
     public ApiResponse<String> updateAnswer(@PathVariable Long id, @RequestBody Answer answer) {
         boolean isUpdated = answerService.updateAnswer(id, answer);
         if (isUpdated) {
-            return new ApiResponse<>(ApiStatus.SUCCESS, ApiStatus.STATUS_OK, ApiStatus.MESSAGE_SUCCESS, "Answer updated successfully!");
+            return ApiResponse.success("Answer updated successfully!");
         } else {
-            return new ApiResponse<>(ApiStatus.FAILURE, ApiStatus.STATUS_NOT_FOUND, ApiStatus.NOT_FOUND_MESSAGE, "Answer not found!");
+            return ApiResponse.failure();
         }
     }
 
@@ -30,9 +30,9 @@ public class AnswerController {
     public ApiResponse<String> deleteAnswer(@PathVariable Long id) {
         boolean isDeleted = answerService.deleteAnswer(id);
         if (isDeleted) {
-            return new ApiResponse<>(ApiStatus.SUCCESS, ApiStatus.STATUS_OK, ApiStatus.MESSAGE_SUCCESS, "Answer deleted successfully!");
+            return ApiResponse.success("Answer deleted successfully!");
         } else {
-            return new ApiResponse<>(ApiStatus.FAILURE, ApiStatus.STATUS_NOT_FOUND, ApiStatus.NOT_FOUND_MESSAGE, "Answer not found!");
+            return ApiResponse.failure();
         }
     }
 }
