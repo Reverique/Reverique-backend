@@ -34,18 +34,17 @@ public class AnswerService {
         newAnswer.setDeleted(0);  // 삭제되지 않은 상태로 설정
         answerRepository.save(newAnswer);  // JPA를 통해 저장
     }
-    public boolean updateAnswer(Long id, Answer answer) {
+    public boolean updateAnswer(Long id, String newAnswer) {
         Optional<Answer> existingAnswerOpt = answerRepository.findById(id);
 
         if (existingAnswerOpt.isPresent()) {
             Answer existingAnswer = existingAnswerOpt.get();
-
-            existingAnswer.setAnswer(answer.getAnswer());
-            answerRepository.save(existingAnswer);  // 업데이트된 엔티티 저장
+            existingAnswer.setAnswer(newAnswer);
+            answerRepository.save(existingAnswer);
             return true;
         }
 
-        return false;  // ID에 해당하는 데이터를 찾지 못한 경우
+        return false;
     }
 
     public boolean deleteAnswer(Long id) {

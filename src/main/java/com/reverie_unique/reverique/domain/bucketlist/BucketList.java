@@ -14,6 +14,9 @@ public class BucketList {
     @Column(name = "title", nullable = false)
     private String title;
 
+    @Column(name = "couple_id", nullable = false)
+    private Long coupleId;
+
     @Column(name = "is_completed", nullable = false)
     private Integer isCompleted = 0;
 
@@ -50,6 +53,14 @@ public class BucketList {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Long getCoupleId() {
+        return coupleId;
+    }
+
+    public void setCoupleId(Long coupleId) {
+        this.coupleId = coupleId;
     }
 
     public Integer getIsCompleted() {
