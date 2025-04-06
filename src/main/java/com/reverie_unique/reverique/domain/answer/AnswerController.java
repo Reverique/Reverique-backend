@@ -26,7 +26,7 @@ public class AnswerController {
             return ApiResponse.failure();
         }
     }
-    
+
     @PatchMapping("/{id}")
     public ApiResponse<String> updateAnswer(@PathVariable Long id, @RequestBody AnswerUpdateRequest request) {
         boolean isUpdated = answerService.updateAnswer(id, request.getAnswer());

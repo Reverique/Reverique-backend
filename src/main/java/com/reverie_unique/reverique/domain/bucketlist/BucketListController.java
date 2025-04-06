@@ -34,10 +34,20 @@ public class BucketListController {
 
     // 버킷리스트 수정
     @PatchMapping("/{id}")
-    public ApiResponse<BucketList> updateBucketList(
-            @PathVariable Long id,
-            @RequestBody BucketListUpdateRequest updateRequest) {
+    public ApiResponse<BucketList> updateBucketList(@PathVariable Long id, @RequestBody BucketListUpdateRequest updateRequest) {
         BucketList updated = bucketListService.update(id, updateRequest); // 예외는 던지기만 함
         return ApiResponse.success(updated);
     }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteBucketList(@PathVariable Long id) {
+        boolean deleted = bucketListService.deleteBucketList(id);
+        if (deleted) {
+            return ApiResponse.success("버킷리스트가 삭제되었습니다.");
+        } else {
+            return ApiResponse.failure();
+        }
+    }
+
+
 }
