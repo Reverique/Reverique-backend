@@ -1,10 +1,13 @@
 package com.reverie_unique.reverique.domain.bucketlist;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bucket_lists")
+@SQLRestriction("deleted = 0")
 public class BucketList {
 
     @Id
@@ -25,6 +28,9 @@ public class BucketList {
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    @Column(name = "deleted")
+    private int deleted;
 
     public BucketList() {
     }
@@ -85,6 +91,14 @@ public class BucketList {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public int getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(int deleted) {
+        this.deleted = deleted;
     }
 
     @Override

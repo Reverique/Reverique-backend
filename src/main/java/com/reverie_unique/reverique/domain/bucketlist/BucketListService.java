@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BucketListService {
@@ -41,5 +42,17 @@ public class BucketListService {
         }
 
         return bucketListRepository.save(bucketList);
+    }
+    public boolean deleteBucketList(Long id) {
+        Optional<BucketList> bucketListOpt = bucketListRepository.findById(id);
+
+        if (bucketListOpt.isPresent()) {
+            BucketList bucket = bucketListOpt.get();
+            bucket.setDeleted(1);  // 소프트 삭제
+            bucketListRepository.save(bucket);
+            return true;
+        }
+
+        return false;
     }
 }
