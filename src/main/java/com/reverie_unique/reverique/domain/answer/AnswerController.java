@@ -17,6 +17,16 @@ public class AnswerController {
         this.answerService = answerService;
     }
 
+    @PostMapping("/{id}")
+    public ApiResponse<String> createAnswer(@PathVariable Long id, @RequestBody AnswerUpdateRequest request) {
+        boolean isUpdated = answerService.updateAnswer(id, request.getAnswer());
+        if (isUpdated) {
+            return ApiResponse.success("Answer created successfully!");
+        } else {
+            return ApiResponse.failure();
+        }
+    }
+    
     @PatchMapping("/{id}")
     public ApiResponse<String> updateAnswer(@PathVariable Long id, @RequestBody AnswerUpdateRequest request) {
         boolean isUpdated = answerService.updateAnswer(id, request.getAnswer());
@@ -26,6 +36,9 @@ public class AnswerController {
             return ApiResponse.failure();
         }
     }
+
+
+
     @DeleteMapping("/{id}")
     public ApiResponse<String> deleteAnswer(@PathVariable Long id) {
         boolean isDeleted = answerService.deleteAnswer(id);
