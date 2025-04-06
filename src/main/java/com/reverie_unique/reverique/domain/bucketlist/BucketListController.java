@@ -1,12 +1,13 @@
 package com.reverie_unique.reverique.domain.bucketlist;
 
 import com.reverie_unique.reverique.common.ApiResponse;
-import com.reverie_unique.reverique.constant.ApiStatus;
 import com.reverie_unique.reverique.domain.dto.BucketListUpdateRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/bucketlists")
 public class BucketListController {
 
     private final BucketListService bucketListService;
@@ -19,8 +20,8 @@ public class BucketListController {
     @GetMapping
     public ApiResponse<List<BucketList>> getBucketLists(
             @RequestParam Long coupleId,
-            @RequestParam(required = false) Boolean completed) {
-        List<BucketList> result = bucketListService.findByCoupleIdAndCompleted(coupleId, completed);
+            @RequestParam(required = false) Integer isCompleted) {
+        List<BucketList> result = bucketListService.findByCoupleIdAndCompleted(coupleId, isCompleted);
         return ApiResponse.success(result);
     }
 

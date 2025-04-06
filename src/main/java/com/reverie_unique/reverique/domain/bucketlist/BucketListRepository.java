@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface BucketListRepository extends JpaRepository<BucketList, Long> {
     List<BucketList> findByCoupleId(Long coupleId);
-    List<BucketList> findByCoupleIdAndCompleted(Long coupleId, Boolean completed);
+    List<BucketList> findByCoupleIdAndIsCompleted(Long coupleId, Integer isCompleted);
 }

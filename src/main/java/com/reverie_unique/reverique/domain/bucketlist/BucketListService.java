@@ -15,11 +15,11 @@ public class BucketListService {
         this.bucketListRepository = bucketListRepository;
     }
 
-    public List<BucketList> findByCoupleIdAndCompleted(Long coupleId, Boolean completed) {
-        if (completed == null) {
+    public List<BucketList> findByCoupleIdAndCompleted(Long coupleId, Integer isCompleted) {
+        if (isCompleted == null) {
             return bucketListRepository.findByCoupleId(coupleId);
         }
-        return bucketListRepository.findByCoupleIdAndCompleted(coupleId, completed);
+        return bucketListRepository.findByCoupleIdAndIsCompleted(coupleId, isCompleted);
     }
 
     public BucketList save(BucketList bucketList) {
