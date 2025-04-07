@@ -2,11 +2,13 @@ package com.reverie_unique.reverique.domain.answer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "answers")
+@SQLRestriction("deleted = 0")
 public class Answer {
 
     @Id
