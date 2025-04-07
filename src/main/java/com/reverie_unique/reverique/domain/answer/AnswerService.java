@@ -1,6 +1,7 @@
 package com.reverie_unique.reverique.domain.answer;
 
 import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,19 +35,25 @@ public class AnswerService {
         newAnswer.setDeleted(0);  // 삭제되지 않은 상태로 설정
         answerRepository.save(newAnswer);  // JPA를 통해 저장
     }
-    public boolean updateAnswer(Long id, String newAnswer) {
-        Optional<Answer> existingAnswerOpt = answerRepository.findById(id);
+    public Long findAnswerId(Long userId, Long questionId) {
+        Optional<Answer> optionalAnswer = answerRepository.findByUserIdAndQuestionId(userId, questionId);
+        if (optionalAnswer.isPresent()) {
+            return optionalAnswer.get().getId();
+        } else {
+            throw new EntityNotFoundException("해당 유저의 답변이 존재하지 않습니다.");
+        }
+    }
 
+    public boolean updateAnswer(Long answerId, String newAnswer) {
+        Optional<Answer> existingAnswerOpt = answerRepository.findById(answerId);
         if (existingAnswerOpt.isPresent()) {
             Answer existingAnswer = existingAnswerOpt.get();
             existingAnswer.setAnswer(newAnswer);
             answerRepository.save(existingAnswer);
             return true;
         }
-
         return false;
     }
-
     public boolean deleteAnswer(Long id) {
         Optional<Answer> existingAnswerOpt = answerRepository.findById(id);
 

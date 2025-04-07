@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
     @Query("SELECT a FROM Answer a WHERE a.coupleId = :coupleId " +
@@ -37,4 +38,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
                                                   @Param("userId2") Long userId2,
                                                   @Param("coupleId") Long coupleId,
                                                   Pageable pageable);
+
+    Optional<Answer> findByUserIdAndQuestionId(Long userId, Long questionId);
 }

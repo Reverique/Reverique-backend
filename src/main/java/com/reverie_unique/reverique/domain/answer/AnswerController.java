@@ -17,11 +17,12 @@ public class AnswerController {
         this.answerService = answerService;
     }
 
-    @PostMapping("/{id}")
-    public ApiResponse<String> createAnswer(@PathVariable Long id, @RequestBody AnswerUpdateRequest request) {
-        boolean isUpdated = answerService.updateAnswer(id, request.getAnswer());
+    @PostMapping
+    public ApiResponse<String> updateAnswer(@RequestBody AnswerUpdateRequest request) {
+        Long answerId = answerService.findAnswerId(request.getUserId(), request.getQuestionId());
+        boolean isUpdated = answerService.updateAnswer(answerId, request.getAnswer());
         if (isUpdated) {
-            return ApiResponse.success("Answer created successfully!");
+            return ApiResponse.success("Answer updated successfully!");
         } else {
             return ApiResponse.failure();
         }
