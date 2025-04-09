@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface BucketListRepository extends JpaRepository<BucketList, Long> {
-    List<BucketList> findByCoupleId(Long coupleId);
-    List<BucketList> findByCoupleIdAndIsCompleted(Long coupleId, Integer isCompleted);
+    List<BucketList> findByCoupleIdOrderByCreatedAtDesc(Long coupleId);
+    List<BucketList> findByCoupleIdAndIsCompletedOrderByCreatedAtDesc(Long coupleId, Integer isCompleted);
 }

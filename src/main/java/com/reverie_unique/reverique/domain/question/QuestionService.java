@@ -41,7 +41,6 @@ public class QuestionService {
 
         // 오늘 날짜에 해당하는 답변들을 찾음
         List<Answer> todayAnswers = answerService.findTodayAnswers(coupleId);
-
         if (todayAnswers.isEmpty()) {
             return getRandomQuestionAndSaveAnswer(userId, coupleId); // 랜덤 질문과 답변 저장 로직을 분리
         } else {
