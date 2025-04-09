@@ -28,9 +28,10 @@ public class AnswerController {
         }
     }
 
-    @PatchMapping("/{id}")
-    public ApiResponse<String> updateAnswer(@PathVariable Long id, @RequestBody AnswerUpdateRequest request) {
-        boolean isUpdated = answerService.updateAnswer(id, request.getAnswer());
+    @PatchMapping
+    public ApiResponse<String> updateDailyAnswer(@RequestBody AnswerUpdateRequest request) {
+        Long answerId = answerService.findAnswerId(request.getUserId(), request.getQuestionId());
+        boolean isUpdated = answerService.updateAnswer(answerId, request.getAnswer());
         if (isUpdated) {
             return ApiResponse.success("Answer updated successfully!");
         } else {
