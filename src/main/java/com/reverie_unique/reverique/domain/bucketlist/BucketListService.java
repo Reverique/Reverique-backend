@@ -18,9 +18,9 @@ public class BucketListService {
 
     public List<BucketList> findByCoupleIdAndCompleted(Long coupleId, Integer isCompleted) {
         if (isCompleted == null) {
-            return bucketListRepository.findByCoupleId(coupleId);
+            return bucketListRepository.findByCoupleIdOrderByCreatedAtDesc(coupleId);
         }
-        return bucketListRepository.findByCoupleIdAndIsCompleted(coupleId, isCompleted);
+        return bucketListRepository.findByCoupleIdAndIsCompletedOrderByCreatedAtDesc(coupleId, isCompleted);
     }
 
     public BucketList save(BucketList bucketList) {
