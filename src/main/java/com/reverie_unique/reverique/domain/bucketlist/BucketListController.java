@@ -4,6 +4,7 @@ import com.reverie_unique.reverique.common.ApiResponse;
 import com.reverie_unique.reverique.domain.dto.BucketListUpdateRequest;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,8 @@ public class BucketListController {
     public ApiResponse<String> deleteBucketList(@PathVariable Long id) {
         boolean deleted = bucketListService.deleteBucketList(id);
         if (deleted) {
-            return ApiResponse.success("버킷리스트가 삭제되었습니다.");
+            return ApiResponse.success(null);
+
         } else {
             return ApiResponse.failure();
         }
