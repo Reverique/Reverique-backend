@@ -17,6 +17,9 @@ public class Couple {
     @Column(name = "user2_id")
     private Long user2Id;
 
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
     private LocalDate createdAt;
 
     private Integer status;
@@ -61,5 +64,13 @@ public class Couple {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 }
