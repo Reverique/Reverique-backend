@@ -1,4 +1,4 @@
-package com.reverie_unique.reverique.domain.user;
+package com.reverie_unique.reverique.domain.user.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -46,6 +46,10 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "deleted")
+    private Long deleted;
+
     // 기본 생성자
     public User() {}
 
@@ -162,6 +166,14 @@ public class User {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Long getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(Long deleted) {
+        this.deleted = deleted;
     }
 }
 
