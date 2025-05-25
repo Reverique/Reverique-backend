@@ -1,4 +1,4 @@
-package com.reverie_unique.reverique.domain.auth;
+package com.reverie_unique.reverique.domain.auth.Service;
 
 import com.reverie_unique.reverique.common.jwt.JwtTokenProvider;
 import com.reverie_unique.reverique.domain.auth.dto.LoginDTO;
