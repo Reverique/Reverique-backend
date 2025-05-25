@@ -1,5 +1,6 @@
 package com.reverie_unique.reverique.domain.user.service;
 
+import com.reverie_unique.reverique.domain.auth.Service.EmailService;
 import com.reverie_unique.reverique.domain.user.dto.UserSignupDTO;
 import com.reverie_unique.reverique.domain.user.entity.User;
 import com.reverie_unique.reverique.domain.user.repository.UserRepository;
@@ -14,10 +15,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     // coupleId에 해당하는 두 사용자를 조회하는 메서드
@@ -29,11 +32,13 @@ public class UserService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    public User signup(UserSignupDTO request) {
+    public void signup(UserSignupDTO request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
         }
-
+        if (!emailService.isEmailVerified(request.getEmail())) {
+            throw new IllegalArgumentException("이메일 인증이 완료되지 않았습니다.");
+        }
         User user = new User();
             user.setEmail(request.getEmail());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -47,7 +52,7 @@ public class UserService {
             user.setUpdatedAt(LocalDateTime.now());
             user.setAddress(request.getAddress());
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 }

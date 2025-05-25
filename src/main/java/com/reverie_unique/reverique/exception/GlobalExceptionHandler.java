@@ -1,6 +1,7 @@
 package com.reverie_unique.reverique.exception;
 
 import com.reverie_unique.reverique.common.ApiResponse;
+import com.reverie_unique.reverique.common.exception.BadRequestException;
 import com.reverie_unique.reverique.constant.ApiStatus;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.EntityNotFoundException;
@@ -43,5 +44,12 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ApiResponse<String> handleIllegalArgumentException(IllegalArgumentException ex) {
         return new ApiResponse<>(ApiStatus.FAILURE, HttpStatus.BAD_REQUEST.value(), ex.getMessage(), null);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ApiResponse<String> handleBadRequest(BadRequestException ex) {
+        return new ApiResponse<>(ApiStatus.FAILURE, 400, ex.getMessage(), null);
     }
 }
