@@ -18,6 +18,13 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
                 .claim("role", user.getRole())
+                .claim("name", user.getName())
+                .claim("nickname", user.getNickName())
+                .claim("email", user.getEmail())
+                .claim("birthDate", user.getBirthDate().toString()) // 문자열로 변환
+                .claim("gender", user.getGender())
+                .claim("userId", user.getId())
+                .claim("coupleId", user.getCoupleId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRY))
                 .signWith(key)
