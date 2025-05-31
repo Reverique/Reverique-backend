@@ -1,6 +1,6 @@
 package com.reverie_unique.reverique.domain.auth.Service;
 
-import com.reverie_unique.reverique.common.emial.EmailSenderContext;
+import com.reverie_unique.reverique.common.email.EmailSenderContext;
 import com.reverie_unique.reverique.common.exception.BadRequestException;
 import com.reverie_unique.reverique.domain.auth.entity.EmailVerification;
 import com.reverie_unique.reverique.domain.auth.repository.EmailVerificationRepository;
@@ -47,5 +47,14 @@ public class EmailService {
         return verificationRepository.findByEmail(email)
                 .filter(ev -> ev.isVerified() && ev.getExpiryDate().isAfter(LocalDateTime.now()))
                 .isPresent();
+    }
+
+    public void sendPasswordResetEmail(String toEmail, String resetToken) {
+        String subject = "Reverique 비밀번호 재설정 안내";
+        String resetLink = "https://your-domain.com/auth/reset-password?token=" + resetToken;
+        String content = "안녕하세요,\n아래 링크를 클릭하여 비밀번호를 재설정하세요. 링크는 30분간 유효합니다.\n\n" + resetLink;
+
+        // 발송 - emailSenderContext를 통해 실제 전송
+        emailSenderContext.sendEmail("naverEmailSender", toEmail, subject, content);
     }
 }
