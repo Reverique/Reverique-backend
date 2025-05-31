@@ -29,7 +29,7 @@ public class QuestionController {
     // 매일 질문 조회
     @GetMapping("/daily-question")
     public ApiResponse<QuestionAnswerResponse> getRandomQuestion(@RequestParam Long userId, @RequestParam Long coupleId) {
-        QuestionAnswerResponse questionAnswerResponse = questionService.getRandomQuestion(userId, coupleId);
+        QuestionAnswerResponse questionAnswerResponse = questionService.getDailyQuestion(userId, coupleId);
         if (questionAnswerResponse == null) {
             return ApiResponse.failure();
         }

@@ -5,6 +5,7 @@ import com.reverie_unique.reverique.domain.answer.AnswerService;
 import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
 import com.reverie_unique.reverique.domain.user.entity.User;
 import com.reverie_unique.reverique.domain.user.service.UserService;
+import com.reverie_unique.reverique.infrastructure.redis.service.DailyQuestionRedisService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,69 +22,89 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final AnswerService answerService;
     private final UserService userService;
+    private final DailyQuestionRedisService dailyQuestionRedisService;
     @Autowired
-    public QuestionService(QuestionRepository questionRepository, AnswerService answerService, UserService userService) {
+    public QuestionService(QuestionRepository questionRepository, AnswerService answerService, UserService userService, DailyQuestionRedisService dailyQuestionRedisService) {
         this.questionRepository = questionRepository;
         this.answerService = answerService;
         this.userService = userService;
+        this.dailyQuestionRedisService = dailyQuestionRedisService;
     }
 
-    public QuestionAnswerResponse getRandomQuestion(Long userId, Long coupleId) {
+    private String getRedisKey(Long coupleId) {
+        return "daily_question:" + coupleId;
+    }
 
-        User user = userService.findById(userId); // userId로 사용자 정보 조회
+    public QuestionAnswerResponse getDailyQuestion(Long userId, Long coupleId) {
+        User user = userService.findById(userId);
         if (user == null) {
-            throw new EntityNotFoundException("사용자를 찾을 수 없습니다."); // EntityNotFoundException 던지기
+            throw new EntityNotFoundException("사용자를 찾을 수 없습니다.");
         }
         if (!Objects.equals(user.getCoupleId(), coupleId)) {
             throw new IllegalArgumentException("이 사용자는 해당 커플에 속하지 않습니다.");
         }
 
-        // 오늘 날짜에 해당하는 답변들을 찾음
-        List<Answer> todayAnswers = answerService.findTodayAnswers(coupleId);
-        if (todayAnswers.isEmpty()) {
-            return getRandomQuestionAndSaveAnswer(userId, coupleId); // 랜덤 질문과 답변 저장 로직을 분리
-        } else {
-            return getAnswersForToday(userId, todayAnswers); // 오늘의 답변 처리 로직을 분리
+        String redisKey = getRedisKey(coupleId);
+
+        // 레디스에 오늘 질문이 있으면 가져오기
+        Object cachedQuestion = dailyQuestionRedisService.getQuestion(redisKey);
+        if (cachedQuestion != null && cachedQuestion instanceof Question) {
+            Question question = (Question) cachedQuestion;
+
+            // 오늘 답변이 이미 있으면 답변 반환
+            List<Answer> todayAnswers = answerService.findTodayAnswers(coupleId);
+            if (!todayAnswers.isEmpty()) {
+                return getAnswersForToday(userId, todayAnswers, question);
+            } else {
+                // 답변이 없으면 답변 저장
+                saveAnswersForUsers(userId, coupleId, question.getId());
+                return new QuestionAnswerResponse(
+                        question.getId(),
+                        question.getContent(),
+                        null,
+                        null,
+                        null);
+            }
         }
+
+        // 레디스에 없으면 DB에서 랜덤 질문 가져오기
+        Optional<Question> randomQuestionOpt = questionRepository.getRandomQuestionExcludingAnswered(coupleId);
+        if (randomQuestionOpt.isEmpty()) {
+            return null;
+        }
+        Question randomQuestion = randomQuestionOpt.get();
+
+        // Redis에 저장 (TTL은 자정까지)
+        dailyQuestionRedisService.saveQuestion(redisKey, randomQuestion);
+
+        // 답변 저장
+        saveAnswersForUsers(userId, coupleId, randomQuestion.getId());
+
+        return new QuestionAnswerResponse(
+                randomQuestion.getId(),
+                randomQuestion.getContent(),
+                null,
+                null,
+                null);
     }
 
-    // 랜덤 질문을 가져오고 답변을 저장하는 로직
-    private QuestionAnswerResponse getRandomQuestionAndSaveAnswer(Long userId, Long coupleId) {
-        Optional<Question> randomQuestion = questionRepository.getRandomQuestionExcludingAnswered(coupleId);
 
-        if (randomQuestion.isPresent()) {
-            Question question = randomQuestion.get();
-
-            answerService.saveAnswer(userId, coupleId, question.getId(), null); // AnswerService를 통해 답변 저장
-            Long otherUserId = getPartnerId(userId, coupleId);
-
-            answerService.saveAnswer(otherUserId, coupleId, question.getId(), null);
-
-
-            return new QuestionAnswerResponse(
-                    question.getId(),
-                    question.getContent(),
-                    null,  // 오늘의 답변이 없으므로 null
-                    null ,  // 상대방의 답변도 없음,
-                    null
-            );
-        } else {
-            return null; // 랜덤 질문이 없으면 null 반환
-        }
+    private void saveAnswersForUsers(Long userId, Long coupleId, Long questionId) {
+        answerService.saveAnswer(userId, coupleId, questionId, null);
+        Long partnerId = getPartnerId(userId, coupleId);
+        answerService.saveAnswer(partnerId, coupleId, questionId, null);
     }
 
     private Long getPartnerId(Long userId, Long coupleId) {
-        // coupleId에 해당하는 두 사람을 찾고, 현재 userId와 다른 userId를 반환
         List<User> usersInCouple = userService.getUsersByCoupleId(coupleId);
         return usersInCouple.stream()
-                .filter(user -> !user.getId().equals(userId)) // userId와 다른 사람을 찾음
+                .filter(user -> !user.getId().equals(userId))
                 .findFirst()
                 .map(User::getId)
                 .orElseThrow(() -> new RuntimeException("No other user found for coupleId: " + coupleId));
     }
 
-    // 오늘의 답변을 처리하는 로직
-    private QuestionAnswerResponse getAnswersForToday(Long userId, List<Answer> todayAnswers) {
+    private QuestionAnswerResponse getAnswersForToday(Long userId, List<Answer> todayAnswers, Question question) {
         Answer myAnswer = todayAnswers.stream()
                 .filter(answer -> answer.getUserId().equals(userId))
                 .findFirst()
@@ -94,21 +115,14 @@ public class QuestionService {
                 .findFirst()
                 .orElse(null);
 
-        Long questionId = todayAnswers.get(0).getQuestionId();
-        Optional<Question> todayQuestion = questionRepository.findById(questionId);
-
-        if (todayQuestion.isPresent()) {
-            Question question = todayQuestion.get();
-            return new QuestionAnswerResponse(
-                    question.getId(),
-                    question.getContent(),
-                    myAnswer != null ? myAnswer.getAnswer() : null,  // 내 답변
-                    otherAnswer != null ? otherAnswer.getAnswer() : null,  // 상대방의 답변
-                    null);
-        } else {
-            return null; // 질문이 없을 경우 처리
-        }
+        return new QuestionAnswerResponse(
+                question.getId(),
+                question.getContent(),
+                myAnswer != null ? myAnswer.getAnswer() : null,
+                otherAnswer != null ? otherAnswer.getAnswer() : null,
+                null);
     }
+
     public Page<QuestionAnswerResponse> getAnswers(Long userId, Long coupleId, Pageable pageable) {
         Long partnerId = getPartnerId(userId, coupleId);
         return answerService.getAnswers(userId, partnerId, coupleId, pageable);

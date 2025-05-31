@@ -1,4 +1,4 @@
-package com.reverie_unique.reverique.common.emial;
+package com.reverie_unique.reverique.common.email;
 
 import com.reverie_unique.reverique.common.email.Strategy.EmailSenderStrategy;
 import org.springframework.stereotype.Component;
