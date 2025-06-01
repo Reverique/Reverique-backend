@@ -1,11 +1,16 @@
 package com.reverie_unique.reverique.domain.user.service;
 
+import com.reverie_unique.reverique.common.jwt.JwtTokenProvider;
 import com.reverie_unique.reverique.domain.auth.Service.EmailService;
+import com.reverie_unique.reverique.domain.user.dto.UserInfoDTO;
 import com.reverie_unique.reverique.domain.user.dto.UserSignupDTO;
+import com.reverie_unique.reverique.domain.user.dto.UserUpdateReqDTO;
+import com.reverie_unique.reverique.domain.user.dto.UserUpdateResDTO;
 import com.reverie_unique.reverique.domain.user.entity.User;
 import com.reverie_unique.reverique.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,11 +21,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final JwtTokenProvider jwtProvider;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, JwtTokenProvider jwtProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.jwtProvider = jwtProvider;
     }
 
     // coupleId에 해당하는 두 사용자를 조회하는 메서드
@@ -53,6 +60,40 @@ public class UserService {
             user.setAddress(request.getAddress());
 
         userRepository.save(user);
+    }
+
+    public UserInfoDTO getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        return UserInfoDTO.from(user);
+    }
+
+    // 유저 정보 업데이트
+    public UserUpdateResDTO updateUserInfo(Long userId, UserUpdateReqDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setNickName(dto.getNickname());
+        user.setBirthDate(dto.getBirthDate());
+        user.setGender(dto.getGender());
+
+        userRepository.save(user);
+
+        String newAccessToken = jwtProvider.generateAccessToken(user);
+
+        UserInfoDTO updatedUser = UserInfoDTO.from(user);
+
+        return new UserUpdateResDTO(updatedUser, newAccessToken);
+    }
+
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        userRepository.delete(user);
     }
 
 }
