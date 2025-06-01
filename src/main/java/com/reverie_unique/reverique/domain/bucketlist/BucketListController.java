@@ -1,10 +1,9 @@
 package com.reverie_unique.reverique.domain.bucketlist;
 
 import com.reverie_unique.reverique.common.ApiResponse;
-import com.reverie_unique.reverique.domain.dto.BucketListUpdateRequest;
+import com.reverie_unique.reverique.domain.bucketlist.dto.BucketListUpdateRequest;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController

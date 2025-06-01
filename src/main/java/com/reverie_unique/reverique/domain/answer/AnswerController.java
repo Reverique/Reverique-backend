@@ -1,8 +1,7 @@
 package com.reverie_unique.reverique.domain.answer;
 
 import com.reverie_unique.reverique.common.ApiResponse;
-import com.reverie_unique.reverique.constant.ApiStatus;
-import com.reverie_unique.reverique.domain.dto.AnswerUpdateRequest;
+import com.reverie_unique.reverique.domain.answer.dto.AnswerUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

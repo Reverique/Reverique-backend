@@ -1,10 +1,10 @@
-package com.reverie_unique.reverique.domain.dto;
+package com.reverie_unique.reverique.domain.answer.dto;
 
-public class AnswerUpdateRequest {
+public class AnswerCreateRequest {
 
     private Long userId;
+    private Long coupleId;
     private Long questionId;
-
     private String answer;
 
     public Long getUserId() {
@@ -13,6 +13,14 @@ public class AnswerUpdateRequest {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getCoupleId() {
+        return coupleId;
+    }
+
+    public void setCoupleId(Long coupleId) {
+        this.coupleId = coupleId;
     }
 
     public Long getQuestionId() {

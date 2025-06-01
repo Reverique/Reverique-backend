@@ -2,7 +2,7 @@ package com.reverie_unique.reverique.domain.question;
 
 import com.reverie_unique.reverique.domain.answer.Answer;
 import com.reverie_unique.reverique.domain.answer.AnswerService;
-import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
+import com.reverie_unique.reverique.domain.question.dto.QuestionAnswerResponse;
 import com.reverie_unique.reverique.domain.user.entity.User;
 import com.reverie_unique.reverique.domain.user.service.UserService;
 import com.reverie_unique.reverique.infrastructure.redis.service.DailyQuestionRedisService;

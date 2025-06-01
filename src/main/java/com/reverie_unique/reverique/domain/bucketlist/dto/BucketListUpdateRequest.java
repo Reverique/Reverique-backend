@@ -1,4 +1,4 @@
-package com.reverie_unique.reverique.domain.dto;
+package com.reverie_unique.reverique.domain.bucketlist.dto;
 
 public class BucketListUpdateRequest {
     private String title;

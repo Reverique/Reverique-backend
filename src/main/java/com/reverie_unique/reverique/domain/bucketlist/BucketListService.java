@@ -1,6 +1,6 @@
 package com.reverie_unique.reverique.domain.bucketlist;
 
-import com.reverie_unique.reverique.domain.dto.BucketListUpdateRequest;
+import com.reverie_unique.reverique.domain.bucketlist.dto.BucketListUpdateRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
