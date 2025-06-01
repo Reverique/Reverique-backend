@@ -1,6 +1,6 @@
 package com.reverie_unique.reverique.domain.answer;
 
-import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
+import com.reverie_unique.reverique.domain.question.dto.QuestionAnswerResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

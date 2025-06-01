@@ -1,6 +1,6 @@
 package com.reverie_unique.reverique.domain.answer;
 
-import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
+import com.reverie_unique.reverique.domain.question.dto.QuestionAnswerResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,7 +19,7 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
     List<Answer> findTodayAnswers(@Param("coupleId") Long coupleId);
 
 
-    @Query(value = "SELECT NEW com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse(" +
+    @Query(value = "SELECT NEW com.reverie_unique.reverique.domain.question.dto.QuestionAnswerResponse(" +
             "    a.questionId, " +
             "    q.content, " +
             "    MAX(CASE WHEN a.userId = :userId1 THEN a.answer END), " +

@@ -1,4 +1,4 @@
-package com.reverie_unique.reverique.domain.dto;
+package com.reverie_unique.reverique.domain.question.dto;
 
 import java.time.LocalDate;
 

@@ -2,7 +2,7 @@ package com.reverie_unique.reverique.domain.question;
 
 import com.reverie_unique.reverique.common.ApiResponse;
 import com.reverie_unique.reverique.common.PageInfo;
-import com.reverie_unique.reverique.domain.dto.QuestionAnswerResponse;
+import com.reverie_unique.reverique.domain.question.dto.QuestionAnswerResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
