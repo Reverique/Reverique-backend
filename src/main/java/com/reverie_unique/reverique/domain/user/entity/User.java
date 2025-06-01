@@ -175,6 +175,13 @@ public class User {
     public void setDeleted(Long deleted) {
         this.deleted = deleted;
     }
+
+    public void updateInfo(String name, String nickName, String birthDate, String gender) {
+        this.name = name;
+        this.nickName = nickName;
+        this.birthDate = birthDate;
+        this.gender = gender;
+    }
 }
 
 
