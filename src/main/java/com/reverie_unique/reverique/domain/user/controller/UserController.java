@@ -1,10 +1,7 @@
 package com.reverie_unique.reverique.domain.user.controller;
 
 import com.reverie_unique.reverique.common.jwt.JwtTokenProvider;
-import com.reverie_unique.reverique.domain.user.dto.UserInfoDTO;
-import com.reverie_unique.reverique.domain.user.dto.UserSignupDTO;
-import com.reverie_unique.reverique.domain.user.dto.UserUpdateReqDTO;
-import com.reverie_unique.reverique.domain.user.dto.UserUpdateResDTO;
+import com.reverie_unique.reverique.domain.user.dto.*;
 import com.reverie_unique.reverique.domain.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +86,24 @@ public class UserController {
             return ResponseEntity.noContent().build(); // 204 No Content
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+    @PutMapping("/me/password")
+    public ResponseEntity<String> changePassword(HttpServletRequest request,
+                                                 @RequestBody PasswordChangeReqDTO dto) {
+        String token = resolveToken(request);
+
+        if (token == null || !jwtProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        Long userId = jwtProvider.getUserIdFromToken(token);
+
+        try {
+            userService.changePassword(userId, dto);
+            return ResponseEntity.ok("비밀번호 변경 성공");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 }
