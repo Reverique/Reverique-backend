@@ -2,10 +2,7 @@ package com.reverie_unique.reverique.domain.user.service;
 
 import com.reverie_unique.reverique.common.jwt.JwtTokenProvider;
 import com.reverie_unique.reverique.domain.auth.Service.EmailService;
-import com.reverie_unique.reverique.domain.user.dto.UserInfoDTO;
-import com.reverie_unique.reverique.domain.user.dto.UserSignupDTO;
-import com.reverie_unique.reverique.domain.user.dto.UserUpdateReqDTO;
-import com.reverie_unique.reverique.domain.user.dto.UserUpdateResDTO;
+import com.reverie_unique.reverique.domain.user.dto.*;
 import com.reverie_unique.reverique.domain.user.entity.User;
 import com.reverie_unique.reverique.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -96,4 +93,15 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    public void changePassword(Long userId, PasswordChangeReqDTO dto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+    }
 }
