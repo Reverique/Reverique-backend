@@ -2,6 +2,8 @@ package com.reverie_unique.reverique.domain.user.service;
 
 import com.reverie_unique.reverique.common.jwt.JwtTokenProvider;
 import com.reverie_unique.reverique.domain.auth.Service.EmailService;
+import com.reverie_unique.reverique.domain.couple.Couple;
+import com.reverie_unique.reverique.domain.couple.CoupleRepository;
 import com.reverie_unique.reverique.domain.user.dto.*;
 import com.reverie_unique.reverique.domain.user.entity.User;
 import com.reverie_unique.reverique.domain.user.repository.UserRepository;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,12 +22,14 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
     private final JwtTokenProvider jwtProvider;
+    private final CoupleRepository coupleRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, JwtTokenProvider jwtProvider) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, JwtTokenProvider jwtProvider, CoupleRepository coupleRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
         this.jwtProvider = jwtProvider;
+        this.coupleRepository = coupleRepository;
     }
 
     // coupleId에 해당하는 두 사용자를 조회하는 메서드
@@ -62,7 +67,18 @@ public class UserService {
     public UserInfoDTO getUserInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
-        return UserInfoDTO.from(user);
+
+        PartnerInfoDTO partnerInfo = getPartnerInfo(user.getCoupleId(), userId);
+
+        return new UserInfoDTO(
+                user.getId(),
+                user.getEmail(),
+                user.getName(),
+                user.getNickName(),
+                user.getBirthDate(),
+                user.getGender(),
+                partnerInfo
+        );
     }
 
     // 유저 정보 업데이트
@@ -82,7 +98,7 @@ public class UserService {
 
         String newAccessToken = jwtProvider.generateAccessToken(user);
 
-        UserInfoDTO updatedUser = UserInfoDTO.from(user);
+        UserInfoDTO updatedUser = getUserInfo(userId);
 
         return new UserUpdateResDTO(updatedUser, newAccessToken);
     }
@@ -103,5 +119,33 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
         userRepository.save(user);
+    }
+
+    public PartnerInfoDTO getPartnerInfo(Long coupleId, Long userId) {
+
+        if (coupleId == null) return null;
+
+        Couple couple = coupleRepository.findById(coupleId).orElse(null);
+        if (couple == null) return null;
+
+        Long partnerId;
+        if (userId.equals(couple.getUser1Id())) {
+            partnerId = couple.getUser2Id();
+        } else if (userId.equals(couple.getUser2Id())) {
+            partnerId = couple.getUser1Id();
+        } else {
+            return null;
+        }
+
+        User partner = userRepository.findById(partnerId).orElse(null);
+        if (partner == null) return null;
+
+        return new PartnerInfoDTO(
+                partner.getName(),
+                partner.getNickName(),
+                partner.getBirthDate(),
+                partner.getGender(),
+                couple.getStartDate().toString()
+        );
     }
 }

@@ -10,6 +10,16 @@ public class UserInfoDTO {
     private String birth;
     private String gender;
 
+    private PartnerInfoDTO partnerInfo;
+
+    public PartnerInfoDTO getPartnerInfo() {
+        return partnerInfo;
+    }
+
+    public void setPartnerInfo(PartnerInfoDTO partnerInfo) {
+        this.partnerInfo = partnerInfo;
+    }
+
     public Long getId() {
         return id;
     }
@@ -67,14 +77,14 @@ public class UserInfoDTO {
         this.gender = gender;
     }
 
-    public static UserInfoDTO from(User user) {
-        return new UserInfoDTO(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getNickName(),
-                user.getBirthDate(),
-                user.getGender()
-        );
+    public UserInfoDTO(Long id, String email, String name, String nickName, String birth, String gender, PartnerInfoDTO partnerInfo) {
+        this.id = id;
+        this.email = email;
+        this.name = name;
+        this.nickName = nickName;
+        this.birth = birth;
+        this.gender = gender;
+        this.partnerInfo = partnerInfo;
     }
+
 }

@@ -1,5 +1,6 @@
 package com.reverie_unique.reverique.domain.user.controller;
 
+import com.reverie_unique.reverique.common.ApiResponse;
 import com.reverie_unique.reverique.common.jwt.JwtTokenProvider;
 import com.reverie_unique.reverique.domain.user.dto.*;
 import com.reverie_unique.reverique.domain.user.service.UserService;
@@ -24,42 +25,45 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> signup(@RequestBody UserSignupDTO request) {
+    public ResponseEntity<ApiResponse<String>> signup(@RequestBody UserSignupDTO request) {
         userService.signup(request);
-        return ResponseEntity.ok("회원가입 성공");
+        return ResponseEntity.ok(ApiResponse.success("회원가입 성공"));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<UserInfoDTO> getMyInfo(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<UserInfoDTO>> getMyInfo(HttpServletRequest request) {
         String token = resolveToken(request);
 
         if (token == null || !jwtProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.custom("fail", HttpStatus.UNAUTHORIZED.value(), "토큰이 유효하지 않습니다.", null));
         }
 
         Long userId = jwtProvider.getUserIdFromToken(token);
 
         UserInfoDTO userInfo = userService.getUserInfo(userId);
 
-        return ResponseEntity.ok(userInfo);
+        return ResponseEntity.ok(ApiResponse.success(userInfo));
     }
 
     @PutMapping("/me")
-    public ResponseEntity<UserUpdateResDTO> updateMyInfo(HttpServletRequest request,
-                                                         @RequestBody UserUpdateReqDTO dto) {
+    public ResponseEntity<ApiResponse<UserUpdateResDTO>> updateMyInfo(HttpServletRequest request,
+                                                                      @RequestBody UserUpdateReqDTO dto) {
         String token = resolveToken(request);
 
         if (token == null || !jwtProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.custom("fail", HttpStatus.UNAUTHORIZED.value(), "토큰이 유효하지 않습니다.", null));
         }
 
         Long userId = jwtProvider.getUserIdFromToken(token);
 
         try {
             UserUpdateResDTO updatedUser = userService.updateUserInfo(userId, dto);
-            return ResponseEntity.ok(updatedUser);
+            return ResponseEntity.ok(ApiResponse.success(updatedUser));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.custom("fail", HttpStatus.BAD_REQUEST.value(), e.getMessage(), null));
         }
     }
 
@@ -72,38 +76,44 @@ public class UserController {
     }
 
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteMyAccount(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<Void>> deleteMyAccount(HttpServletRequest request) {
         String token = resolveToken(request);
 
         if (token == null || !jwtProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.custom("fail", HttpStatus.UNAUTHORIZED.value(), "토큰이 유효하지 않습니다.", null));
         }
 
         Long userId = jwtProvider.getUserIdFromToken(token);
 
         try {
             userService.deleteUser(userId);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            // 삭제 성공 시 204 No Content + 빈 바디 (ApiResponse 대신 빈 리턴 가능)
+            return ResponseEntity.noContent().build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.custom("fail", HttpStatus.BAD_REQUEST.value(), e.getMessage(), null));
         }
     }
+
     @PutMapping("/me/password")
-    public ResponseEntity<String> changePassword(HttpServletRequest request,
-                                                 @RequestBody PasswordChangeReqDTO dto) {
+    public ResponseEntity<ApiResponse<String>> changePassword(HttpServletRequest request,
+                                                              @RequestBody PasswordChangeReqDTO dto) {
         String token = resolveToken(request);
 
         if (token == null || !jwtProvider.validateToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.custom("fail", HttpStatus.UNAUTHORIZED.value(), "토큰이 유효하지 않습니다.", null));
         }
 
         Long userId = jwtProvider.getUserIdFromToken(token);
 
         try {
             userService.changePassword(userId, dto);
-            return ResponseEntity.ok("비밀번호 변경 성공");
+            return ResponseEntity.ok(ApiResponse.success("비밀번호 변경 성공"));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.custom("fail", HttpStatus.BAD_REQUEST.value(), e.getMessage(), null));
         }
     }
 }
