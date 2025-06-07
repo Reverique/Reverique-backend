@@ -9,7 +9,7 @@ public class UserInfoDTO {
     private String nickName;
     private String birth;
     private String gender;
-
+    private String profile;
     private PartnerInfoDTO partnerInfo;
 
     public PartnerInfoDTO getPartnerInfo() {
@@ -68,22 +68,24 @@ public class UserInfoDTO {
         this.gender = gender;
     }
 
-    public UserInfoDTO(Long id, String email, String name, String nickName, String birth, String gender) {
+    public UserInfoDTO(Long id, String email, String name, String nickName, String birth, String gender, String profile) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.nickName = nickName;
         this.birth = birth;
         this.gender = gender;
+        this.profile = profile;
     }
 
-    public UserInfoDTO(Long id, String email, String name, String nickName, String birth, String gender, PartnerInfoDTO partnerInfo) {
+    public UserInfoDTO(Long id, String email, String name, String nickName, String birth, String gender, String profile, PartnerInfoDTO partnerInfo) {
         this.id = id;
         this.email = email;
         this.name = name;
         this.nickName = nickName;
         this.birth = birth;
         this.gender = gender;
+        this.profile = profile;
         this.partnerInfo = partnerInfo;
     }
 

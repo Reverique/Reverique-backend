@@ -7,6 +7,7 @@ public class UserSignupDTO {
     private String nickname;
     private String phoneNumber;
     private String birthDate;
+    private String profile;
 
     public String getEmail() {
         return email;
@@ -50,6 +51,13 @@ public class UserSignupDTO {
 
     public String getBirthDate() {
         return birthDate;
+    }
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
     }
 
     public void setBirthDate(String birthDate) {

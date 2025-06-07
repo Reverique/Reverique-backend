@@ -25,6 +25,7 @@ public class JwtTokenProvider {
                 .claim("gender", user.getGender())
                 .claim("userId", user.getId())
                 .claim("coupleId", user.getCoupleId())
+                .claim("profile", user.getProfile())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRY))
                 .signWith(key)
