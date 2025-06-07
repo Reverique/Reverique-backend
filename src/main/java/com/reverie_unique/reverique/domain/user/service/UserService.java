@@ -9,9 +9,7 @@ import com.reverie_unique.reverique.domain.user.entity.User;
 import com.reverie_unique.reverique.domain.user.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.webjars.NotFoundException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -60,6 +58,7 @@ public class UserService {
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
             user.setAddress(request.getAddress());
+            user.setProfile(request.getProfile());
 
         userRepository.save(user);
     }
@@ -77,6 +76,7 @@ public class UserService {
                 user.getNickName(),
                 user.getBirthDate(),
                 user.getGender(),
+                user.getProfile(),
                 partnerInfo
         );
     }

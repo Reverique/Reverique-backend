@@ -50,6 +50,9 @@ public class User {
     @Column(name = "deleted")
     private Long deleted;
 
+    @Column(name = "profile")
+    private String profile;
+
     // 기본 생성자
     public User() {}
 
@@ -132,6 +135,14 @@ public class User {
         return gender;
     }
 
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+
     public void setGender(String gender) {
         this.gender = gender;
     }
@@ -176,11 +187,12 @@ public class User {
         this.deleted = deleted;
     }
 
-    public void updateInfo(String name, String nickName, String birthDate, String gender) {
+    public void updateInfo(String name, String nickName, String birthDate, String gender, String profile) {
         this.name = name;
         this.nickName = nickName;
         this.birthDate = birthDate;
         this.gender = gender;
+        this.profile = profile;
     }
 }
 
