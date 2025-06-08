@@ -25,7 +25,8 @@ Thumbs.db  # Windows에서 생성되는 파일
 *.iws
 *.iml
 *.ipr
-
+/src/main/resources/application.properties
+**/application.properties
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -35,7 +36,7 @@ Thumbs.db  # Windows에서 생성되는 파일
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
-/src/main/resources/application.properties
-**/application.properties
+
+
 ### VS Code ###
 .vscode/
